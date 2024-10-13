@@ -1,4 +1,4 @@
-# Streamlit Linear Regression Perdiction ✨
+# Streamlit NLP Dashboard ✨
 Streamlit app for NPL Dashboard
 
 ## Setup Environment - Anaconda
