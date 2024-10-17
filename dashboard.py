@@ -3,6 +3,8 @@ from pathlib import Path
 import streamlit as st
 import pandas as pd
 
+from DataCleaning import clean
+
 def verify_file(file):
     if file is not None:
         fileType = Path(file.name).suffix
@@ -39,9 +41,10 @@ def upload_file():
     df = verify_file(file)
 
     if df is not None:
-        st.button("Process Data")
+        if st.button("Process Data"):
+            df.to_csv("data/raw-data.csv", index=False)
+            clean("data/raw-data.csv")
 
-        return df
     else:
         st.markdown("""
                 <div style="display:flex;flex-direction:column;align-items:center;padding:10px;border:1px solid #697565;border-radius:10px">
@@ -60,7 +63,7 @@ def main():
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     header()
-    df = upload_file()
+    upload_file()
 
 if __name__ == "__main__":
     main()
