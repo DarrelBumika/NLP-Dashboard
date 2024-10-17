@@ -16,6 +16,8 @@ def verify_file(file):
 
         if "text" not in df.columns:
             st.error("The uploaded file does not contain a 'text' column.")
+        else:
+            return df
 
 
 def header():
@@ -34,21 +36,28 @@ def header():
 def upload_file():
     file = st.file_uploader("Upload your CSV, XLS or XLSX file", type=["csv", "xls", "xlsx"], accept_multiple_files=False)
 
-    verify_file(file)
+    df = verify_file(file)
 
-    st.markdown("""
-            <div style="display:flex;flex-direction:column;align-items:center;padding:10px;border:1px solid #697565;border-radius:10px">
-                <text style="text-align: center">Please ensure that your uploaded file includes a column header with the 
-                following format:</text>
-                <ul style="text-align: left; margin:0px">
-                    <li>"text" column header for the text data.</li>
-                    <li>"label" column header for the sentiment labels (optional).</li>
-                </ul>
-            </div>
-        """, unsafe_allow_html=True)
+    if df is not None:
+        st.button("Process Data")
+
+        return df
+    else:
+        st.markdown("""
+                <div style="display:flex;flex-direction:column;align-items:center;padding:10px;border:1px solid #697565;border-radius:10px">
+                    <text style="text-align: center">Please ensure that your uploaded file includes a column header with the 
+                    following format:</text>
+                    <ul style="text-align: left; margin:0px">
+                        <li>"text" column header for the text data.</li>
+                        <li>"label" column header for the sentiment labels (optional).</li>
+                    </ul>
+                </div>
+            """, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(initial_sidebar_state="collapsed")
+    with open("src/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     header()
     df = upload_file()
