@@ -1,0 +1,22 @@
+.stButton > button {
+    width:100%;
+    background-color:#ECDFCC;
+    display:flex;
+    justify-content:center;
+    padding:10px;
+    border:0;
+    border-radius:10px;
+    box-shadow: 0 8px #3C3D37;
+}
+
+.stButton > button:active {
+    background-color: #ECDFCC;
+    transform: translateY(4px) !important;
+    transition: all ease-in .05s;
+}
+
+.stButton > button > div > p {
+    color: #3C3D37;
+    font-size: 20px;
+    font-weight: bold;
+}
