@@ -1,3 +1,7 @@
+[data-testid="collapsedControl"] {
+    display: none
+}
+
 .stButton > button {
     width:100%;
     background-color:#ECDFCC;
