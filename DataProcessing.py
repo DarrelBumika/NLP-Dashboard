@@ -21,7 +21,6 @@ def data_cleaning(sent):
     string = stopword_remover.remove(string)  # Menghapus stopwords
     return string
 
-
 def data_labeling(sent):
     X = feature_bow.transform([sent])
     sentimentLabel = model.predict(X)[0]
@@ -32,11 +31,9 @@ def clean(df):
     df.dropna(subset=['text'])
     return df
 
-
 def label(df):
     df['label'] = df.text.apply(data_labeling)
     return df
-
 
 def save_data(data, path):
     data.to_csv(path, index=False)
