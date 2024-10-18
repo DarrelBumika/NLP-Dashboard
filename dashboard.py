@@ -1,69 +1,63 @@
-from pathlib import Path
-
 import streamlit as st
 import pandas as pd
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import seaborn as sns
+from collections import Counter
+import stanza
 
-from DataCleaning import clean
+stanza.download('id')
+nlp = stanza.Pipeline('id')
 
-def verify_file(file):
-    if file is not None:
-        fileType = Path(file.name).suffix
-        if fileType == ".csv":
-            df = pd.read_csv(file)
-        elif fileType == ".xls" or fileType == ".xlsx":
-            df = pd.read_excel(file)
-        else:
-            st.error("Invalid file format. Please upload a CSV, XLS or XLSX file.")
-            st.stop()
+# Streamlit app layout
+st.title("NLP Dashboard")
+st.sidebar.title("Upload your CSV")
 
-        if "text" not in df.columns:
-            st.error("The uploaded file does not contain a 'text' column.")
-        else:
-            return df
+# Upload the file
+df = pd.read_csv("data/cleaned-data.csv")
 
+# Check for necessary headers
+if 'text' in df.columns:
+    text_data = df['text']
 
-def header():
-    st.markdown("""
-            <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:30px">
-                <h1 style="font-size:5rem">NLP Dashboard</h1>
-                <div style="display:flex;align-items:center;background-color:#3C3D37;padding:20px 20px;border-radius:10px;font-size:1rem;">
-                    <text style="text-align: center">This dashboard is designed to simplify text analysis using Natural 
-                    Language Processing (NLP) techniques. You can easily upload a CSV, XLS or XLSX file containing text data, and we 
-                    will handle the data processing for you.</text>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+    st.write("## Data Preview")
+    st.dataframe(df.head())
 
+    # Tokenization example
+    tokens = [token.text for doc in nlp.pipe(text_data.astype(str)) for token in doc if not token.is_stop]
 
-def upload_file():
-    file = st.file_uploader("Upload your CSV, XLS or XLSX file", type=["csv", "xls", "xlsx"], accept_multiple_files=False)
+    # Choose what visualization to display
+    option = st.sidebar.selectbox(
+        'Choose an analysis:',
+        ['Word Cloud', 'Word Frequency', 'Sentiment Analysis']
+    )
 
-    df = verify_file(file)
+    if option == 'Word Cloud':
+        # 1. Word Cloud Visualization
+        st.write("### Word Cloud")
+        wordcloud = WordCloud(width=800, height=400, random_state=21, max_font_size=110).generate(" ".join(tokens))
+        plt.figure(figsize=(10, 5))
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis('off')
+        st.pyplot(plt)
 
-    if df is not None:
-        if st.button("Process Data"):
-            df.to_csv("data/raw-data.csv", index=False)
-            clean("data/raw-data.csv")
+    elif option == 'Word Frequency':
+        # 2. Word Frequency Visualization
+        st.write("### Word Frequency")
+        freq = Counter(tokens)
+        common_words = freq.most_common(10)
+        df_freq = pd.DataFrame(common_words, columns=["Word", "Frequency"])
+        fig, ax = plt.subplots()
+        sns.barplot(x='Frequency', y='Word', data=df_freq, ax=ax)
+        st.pyplot(fig)
 
-    else:
-        st.markdown("""
-                <div style="display:flex;flex-direction:column;align-items:center;padding:10px;border:1px solid #697565;border-radius:10px">
-                    <text style="text-align: center">Please ensure that your uploaded file includes a column header with the 
-                    following format:</text>
-                    <ul style="text-align: left; margin:0px">
-                        <li>"text" column header for the text data.</li>
-                        <li>"label" column header for the sentiment labels (optional).</li>
-                    </ul>
-                </div>
-            """, unsafe_allow_html=True)
+    elif option == 'Sentiment Analysis':
+        # 3. Sentiment Analysis Visualization (example using TextBlob)
+        from textblob import TextBlob
 
-def main():
-    st.set_page_config(initial_sidebar_state="collapsed")
-    with open("src/style.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-    header()
-    upload_file()
-
-if __name__ == "__main__":
-    main()
+        st.write("### Sentiment Analysis")
+        sentiments = text_data.apply(lambda x: TextBlob(str(x)).sentiment.polarity)
+        st.write("Sentiment Distribution")
+        fig, ax = plt.subplots()
+        sns.histplot(sentiments, bins=20, ax=ax, kde=True)
+        st.pyplot(fig)
