@@ -52,6 +52,7 @@ def upload_file():
         if st.button("Process Data"):
             df.to_csv("data/raw-data.csv", index=False)
             process_data()
+            st.switch_page("pages/Dashboard.py")
 
     else:
         st.markdown("""
