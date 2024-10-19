@@ -182,7 +182,7 @@ def sentiment_analysis(df):
 def export():
     st.markdown("Export Cleaned & Labeled Data to CSV file")
     with open("data/cleaned-data.csv", "rb") as file:
-        st.download_button("Download Cleaned Data", file, "cleaned-data.csv", key="cleaned-data")
+        st.download_button("Download Data", file, "cleaned-data.csv", key="cleaned-data")
 
 
 def main():
