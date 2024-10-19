@@ -1,3 +1,4 @@
+import os
 import random
 from collections import Counter
 import matplotlib.pyplot as plt
@@ -173,11 +174,18 @@ def sentiment_analysis(df):
 
 
 def main():
+    if not os.path.exists("data/cleaned-data.csv"):
+        st.switch_page("App.py")
+
     st.set_page_config(initial_sidebar_state="collapsed")
     with open("src/style.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     header()
+    if st.button("Back", key="back"):
+        os.remove("data/cleaned-data.csv")
+        os.remove("data/raw-data.csv")
+        st.switch_page("App.py")
     tab_menu()
 
 
