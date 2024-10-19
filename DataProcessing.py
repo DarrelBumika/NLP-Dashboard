@@ -9,6 +9,7 @@ model = pickle.load(open('model/model-nb.p', 'rb'))
 feature_bow = pickle.load(open('model/feature-bow.p', 'rb'))
 
 def data_cleaning(sent):
+    sent = str(sent)
     if sent == 'nan':
         return ''
     string = sent.lower()  # Mengubah kata menjadi huruf kecil
@@ -36,4 +37,5 @@ def label(df):
     return df
 
 def save_data(data, path):
+    data = data[['text', 'label']]
     data.to_csv(path, index=False)
