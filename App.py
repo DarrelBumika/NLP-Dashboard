@@ -3,7 +3,8 @@ from pathlib import Path
 import streamlit as st
 import pandas as pd
 
-import DataProcessing
+import utils.DataProcessing as DataProcessing
+
 
 def verify_file(file):
     if file is not None:
