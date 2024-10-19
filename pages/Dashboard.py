@@ -14,11 +14,13 @@ import utils.DataProcessing as DataProcessing
 
 colors = ['#3B3030', '#664343', '#795757', '#FFF0D1', '#F8E9A1']
 
+
 def text_sentiment(text):
     df = pd.DataFrame({"text": [text]})
     df = DataProcessing.clean(df)
     df = DataProcessing.label(df)
     return df
+
 
 def text_cluster(df, num_clusters):
     vectorizer = TfidfVectorizer()
@@ -35,6 +37,7 @@ def text_cluster(df, num_clusters):
 
     return df_plot
 
+
 def header():
     st.markdown("""
             <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:30px">
@@ -50,8 +53,8 @@ def tab_menu():
     df = pd.read_csv("data/cleaned-data.csv")
     df["text"] = df["text"].astype(str)
 
-    data_overview_tab, word_cloud_tab, word_frequency_tab, clustering_tab, sentiment_analysis_tab = st.tabs(
-        ["👁️ Data Overview", "☁️ Word Cloud", "📊 Word Frequency", "🌐 Clustering", "😡 Sentiment Analysis"],
+    data_overview_tab, word_cloud_tab, word_frequency_tab, clustering_tab, sentiment_analysis_tab, export_tab = st.tabs(
+        ["👁️ Data Overview", "☁️ Word Cloud", "📊 Word Frequency", "🌐 Clustering", "😡 Sentiment Analysis", "↗️ Export"],
     )
 
     with data_overview_tab:
@@ -68,6 +71,9 @@ def tab_menu():
 
     with sentiment_analysis_tab:
         sentiment_analysis(df)
+
+    with export_tab:
+        export()
 
 
 def data_overview(df):
@@ -171,6 +177,12 @@ def sentiment_analysis(df):
                     <text style="font-weight:bold;font-size:3.5rem;">{df["label"][0].capitalize()}</text>
                 </div>
         """, unsafe_allow_html=True)
+
+
+def export():
+    st.markdown("Export Cleaned & Labeled Data to CSV file")
+    with open("data/cleaned-data.csv", "rb") as file:
+        st.download_button("Download Cleaned Data", file, "cleaned-data.csv", key="cleaned-data")
 
 
 def main():
