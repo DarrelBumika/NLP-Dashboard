@@ -5,7 +5,7 @@ import pickle
 factory = StopWordRemoverFactory()
 stopword_remover = factory.create_stop_word_remover()
 
-model = pickle.load(open('./models/models-nb.p', 'rb'))
+model = pickle.load(open('./models/model-nb.p', 'rb'))
 feature_bow = pickle.load(open('./models/feature-bow.p', 'rb'))
 
 def data_cleaning(sent):
